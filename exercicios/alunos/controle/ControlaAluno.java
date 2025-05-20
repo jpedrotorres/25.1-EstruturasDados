@@ -6,148 +6,98 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ControlaAluno {
-    private ArrayList<Aluno> produtos;
-    private final String arquivoProdutos = "alunos.txt";
+    private ArrayList<Aluno> alunos;
+    private final String arquivoAlunos = "alunos.txt";
 
     public ControlaAluno() {
-        this.produtos = new ArrayList<>();
-        carregarProdutos();
+        this.alunos = new ArrayList<>();
+        carregarAlunos();
     }
 
-    public void adicionarProduto(int id, String nome, double valor) {
-        Produto produto = new Produto(id, nome, valor);
-        produtos.add(produto);
-        salvarProdutos();
-        System.out.println("Produto adicionado com sucesso!");
+    public void adicionarAluno(int matricula, String nome, double cr) {
+        Aluno aluno = new Aluno(matricula, nome, cr);
+        alunos.add(aluno);
+        salvarAlunos();
+        System.out.println("Aluno cadastrado com sucesso!");
     }
 
-    public void listarProdutos() {
-        if (produtos.isEmpty()) {
-            System.out.println("Nenhum produto cadastrado.");
+    public void listarAlunos() {
+        if (alunos.isEmpty()) {
+            System.out.println("Nenhum aluno registrado.");
         } else {
-            System.out.println("Lista de Produtos:");
-            for (Produto produto : produtos) {
-                produto.listarProduto();
+            System.out.println("Lista de alunos:");
+            for (Aluno aluno : alunos) {
+                aluno.listarAluno();
             }
         }
     }
 
-    public void alterarProduto(int id) {
-        Produto produto = buscarProdutoPorId(id);
-        if (produto != null) {
+    public void alterarAluno(int matricula) {
+        Aluno aluno = buscarAlunoPorMatricula(matricula);
+        if (aluno != null) {
             Scanner scanner = new Scanner(System.in);
-            System.out.print("Novo nome do produto: ");
+            System.out.print("Novo nome do aluno: ");
             String novoNome = scanner.nextLine();
-            System.out.print("Novo valor do produto: ");
-            double novoValor = scanner.nextDouble();
+            System.out.print("Novo coeficiente de rendimento do aluno: ");
+            double novoCR = scanner.nextDouble();
+            scanner.close();
             
-            produto.setNome(novoNome);
-            produto.setValor(novoValor);
-            salvarProdutos();
-            System.out.println("Produto alterado com sucesso!");
+            aluno.setNome(novoNome);
+            aluno.setCR(novoCR);
+            salvarAlunos();
+            System.out.println("Aluno alterado com sucesso!");
         } else {
-            System.out.println("Produto com ID " + id + " não encontrado.");
+            System.out.println("Aluno com matrícula " + matricula + " não encontrado.");
         }
     }
 
-    public void excluirProduto(int id) {
-        Produto produto = buscarProdutoPorId(id);
-        if (produto != null) {
-            produtos.remove(produto);
-            salvarProdutos();
-            System.out.println("Produto excluído com sucesso!");
+    public void excluirAluno(int matricula) {
+        Aluno aluno = buscarAlunoPorMatricula(matricula);
+        if (aluno != null) {
+            alunos.remove(aluno);
+            salvarAlunos();
+            System.out.println("Aluno excluído com sucesso!");
         } else {
-            System.out.println("Produto com ID " + id + " não encontrado.");
+            System.out.println("Aluno com matrícula " + matricula + " não encontrado.");
         }
     }
 
-    private Produto buscarProdutoPorId(int id) {
-        for (Produto produto : produtos) {
-            if (produto.getId() == id) {
-                return produto;
+    private Aluno buscarAlunoPorMatricula(int matricula) {
+        for (Aluno aluno : alunos) {
+            if (aluno.getMaricula() == matricula) {
+                return aluno;
             }
         }
         return null;
     }
 
-    // Método para salvar produtos no arquivo
-    private void salvarProdutos() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(arquivoProdutos))) {
-            for (Produto produto : produtos) {
-                writer.write(produto.getId() + ";" + produto.getNome() + ";" + produto.getValor());
+    // Método para salvar alunos no arquivo
+    private void salvarAlunos() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(arquivoAlunos))) {
+            for (Aluno aluno : alunos) {
+                writer.write(aluno.getMaricula() + ";" + aluno.getNome() + ";" + aluno.getCR());
                 writer.newLine();
             }
         } catch (IOException e) {
-            System.out.println("Erro ao salvar produtos: " + e.getMessage());
+            System.out.println("Erro ao salvar alunos: " + e.getMessage());
         }
     }
 
-    // Método para carregar produtos do arquivo
-    private void carregarProdutos() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(arquivoProdutos))) {
+    // Método para carregar alunos do arquivo
+    private void carregarAlunos() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(arquivoAlunos))) {
             String linha;
             while ((linha = reader.readLine()) != null) {
                 String[] dados = linha.split(";");
-                int id = Integer.parseInt(dados[0]);
+                int matricula = Integer.parseInt(dados[0]);
                 String nome = dados[1];
-                double valor = Double.parseDouble(dados[2]);
-                produtos.add(new Produto(id, nome, valor));
+                double cr = Double.parseDouble(dados[2]);
+                alunos.add(new Aluno(matricula, nome, cr));
             }
         } catch (FileNotFoundException e) {
-            System.out.println("Arquivo de produtos não encontrado. Será criado ao salvar novos produtos.");
+            System.out.println("Arquivo de alunos não encontrado. Será criado ao salvar novos alunos.");
         } catch (IOException e) {
-            System.out.println("Erro ao carregar produtos: " + e.getMessage());
+            System.out.println("Erro ao carregar alunos: " + e.getMessage());
         }
-    }
-
-    public static void main(String[] args) {
-        ControlaProduto controle = new ControlaProduto();
-        Scanner scanner = new Scanner(System.in);
-        int opcao;
-
-        do {
-            System.out.println("\nMenu:");
-            System.out.println("1. Adicionar Produto");
-            System.out.println("2. Listar Produtos");
-            System.out.println("3. Alterar Produto");
-            System.out.println("4. Excluir Produto");
-            System.out.println("0. Sair");
-            System.out.print("Escolha uma opção: ");
-            opcao = scanner.nextInt();
-
-            switch (opcao) {
-                case 1:
-                    System.out.print("ID do Produto: ");
-                    int id = scanner.nextInt();
-                    scanner.nextLine(); // Limpa o buffer do scanner
-                    System.out.print("Nome do Produto: ");
-                    String nome = scanner.nextLine();
-                    System.out.print("Valor do Produto: ");
-                    double valor = scanner.nextDouble();
-                    controle.adicionarProduto(id, nome, valor);
-                    break;
-                case 2:
-                    controle.listarProdutos();
-                    break;
-                case 3:
-                    System.out.print("ID do Produto a alterar: ");
-                    int idAlterar = scanner.nextInt();
-                    scanner.nextLine(); // Limpa o buffer
-                    controle.alterarProduto(idAlterar);
-                    break;
-                case 4:
-                    System.out.print("ID do Produto a excluir: ");
-                    int idExcluir = scanner.nextInt();
-                    controle.excluirProduto(idExcluir);
-                    break;
-                case 0:
-                    System.out.println("Encerrando o programa.");
-                    break;
-                default:
-                    System.out.println("Opção inválida. Tente novamente.");
-            }
-        } while (opcao != 0);
-
-        scanner.close();
     }
 }
