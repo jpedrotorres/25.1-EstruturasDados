@@ -26,7 +26,7 @@ public class Aluno {
     }
 
     // Setters
-    public void setMatricul(int matricula) {
+    public void setMatricula(int matricula) {
         this.matricula = matricula;
     }
 
@@ -38,7 +38,7 @@ public class Aluno {
         this.cr = cr;
     }
 
-    public void listarProduto() {
+    public void listarAluno() {
         System.out.println("Matrícula: " + matricula + ", Nome: " + nome + ", Coeficiente de Rendimento: " + cr);
     }
 }
